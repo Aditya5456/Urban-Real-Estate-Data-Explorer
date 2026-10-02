@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore housing prices, property features, and neighborhood patterns in an interactive dashboard.">
+  <title>Urban Real Estate Data Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+  <a class="skip-link" href="#top">Skip to main content</a>
+  <header class="topbar">
+    <a class="brand" href="#top"><span class="brand-mark">UR</span><span>Urban Real Estate<br><small>Data Explorer</small></span></a>
+    <nav aria-label="Main navigation"><a href="#overview">Overview</a><a href="#statistics">Numbers</a><a href="#analysis">Analysis</a><a href="#findings">Findings</a></nav>
+  </header>
+  <main id="top" tabindex="-1">
+    <section class="hero wrap">
+      <div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> A closer look at housing data</p>
+        <h1>Explore Housing Data</h1>
+        <p class="hero-sub">Browse home features, compare sale prices, and discover patterns across neighborhoods with interactive charts and summaries.</p>
+        <div class="hero-actions"><a class="button primary" href="#dataset">Explore the dataset <span>↓</span></a><a class="text-link" href="https://www.kaggle.com/c/5407/data" target="_blank" rel="noreferrer">Kaggle data source ↗</a></div>
+        <div class="hero-meta"><span>CSV upload</span><i></i><span>Interactive charts</span><i></i><span>Live summaries</span></div>
+      </div>
+      <div class="hero-visual" aria-label="Abstract chart illustration"><div class="chart-label">SALE PRICE · DISTRIBUTION</div><div class="chart-kpi"><strong id="heroMedian">—</strong><span>median sale price</span></div><svg class="hero-chart" viewBox="0 0 530 220" role="img" aria-label="Illustrative distribution curve"><path class="grid-line" d="M30 35H510M30 90H510M30 145H510M30 200H510"/><path class="area" d="M30 199 C73 198 70 193 100 185 S145 142 172 120 S213 67 247 59 S285 61 309 80 S344 125 372 146 S416 169 438 182 S474 194 510 198 L510 210 L30 210Z"/><path class="line" d="M30 199 C73 198 70 193 100 185 S145 142 172 120 S213 67 247 59 S285 61 309 80 S344 125 372 146 S416 169 438 182 S474 194 510 198"/><circle cx="247" cy="59" r="5" class="chart-point"/></svg><div class="chart-axis"><span>LOWER</span><span>SALE PRICE</span><span>HIGHER</span></div><div class="hero-foot"><span>Observed sample distribution</span><span class="foot-mark">HOME SALES</span></div></div>
+    </section>
+    <section class="intro-band"><div class="wrap intro-grid"><div><p class="eyebrow">ABOUT THE EXPLORER</p><h2>Get to know the homes<br><em>behind the numbers.</em></h2></div><p>Upload a housing dataset to browse its rows, compare feature values, and see how prices vary. Charts and summaries update whenever you switch datasets.</p><p class="intro-note">The bundled data covers home sales in Ames, Iowa. Patterns show how values are related in this dataset; they do not prove that one feature causes a price change.</p></div></section>
+    <section class="section wrap" id="dataset">
+      <div class="section-heading"><div><p class="eyebrow">GET STARTED</p><h2>Choose a dataset</h2><p>Upload a housing CSV or explore the bundled sample.</p></div><div class="source-pill"><span class="source-icon">↗</span><span><b>Sample data source</b><small>House sales in Ames, Iowa</small></span></div></div>
+      <div class="upload-panel" id="uploadPanel"><div class="upload-icon" aria-hidden="true">↑</div><div class="upload-copy"><strong>Drop your CSV here or <button id="browseButton" class="browse-link" type="button">browse files</button></strong><span>CSV format · up to 32 MB · your file stays in this local app</span></div><input id="csvFile" class="visually-hidden" type="file" accept=".csv,text/csv" tabindex="-1" aria-hidden="true"><button id="uploadButton" class="button primary">Upload dataset</button><button id="resetButton" class="button secondary">Reset sample</button></div>
+      <p class="status-line" id="status" aria-live="polite">Loading the bundled sample dataset…</p>
+    </section>
+    <section class="section wrap" id="overview">
+      <div class="section-heading compact"><div><p class="eyebrow">OVERVIEW</p><h2>Dataset overview</h2></div><span id="datasetName" class="dataset-name">—</span></div>
+      <div class="metric-grid" id="overviewCards"></div>
+    </section>
+    <section class="section wrap" id="preview">
+      <div class="section-heading compact"><div><p class="eyebrow">BROWSE ROWS</p><h2>Dataset preview</h2><p>Search rows and move through the current dataset.</p></div><div class="table-tools"><input id="rowSearch" class="search-input" type="search" aria-label="Search dataset rows" placeholder="Search values…"><span id="pageInfo" class="muted"></span></div></div>
+      <div class="table-wrap preview-wrap"><table id="previewTable"></table></div><div class="pagination"><button id="prevPage" class="button secondary small">← Previous</button><button id="nextPage" class="button secondary small">Next →</button></div>
+    </section>
+    <section class="section wrap" id="features">
+      <div class="section-heading compact"><div><p class="eyebrow">COLUMNS</p><h2>Column details</h2></div><span class="muted">Type · missing values · distinct values</span></div>
+      <div class="table-wrap"><table id="featureTable"></table></div>
+    </section>
+    <section class="section tinted" id="statistics"><div class="wrap">
+      <div class="section-heading compact"><div><p class="eyebrow">SUMMARY</p><h2>Numbers at a glance</h2><p>Compare typical values, spread, and range across number-based columns.</p></div><span class="unit-note">AVERAGE · MIDPOINT · SPREAD · RANGE</span></div>
+      <div class="table-wrap stats-wrap"><table id="statsTable"></table></div>
+    </div></section>
+    <section class="section wrap" id="analysis">
+      <div class="section-heading"><div><p class="eyebrow">DISTRIBUTION</p><h2>Explore a feature</h2><p>See how values are spread, where they cluster, and how they compare.</p></div><select id="distributionFeature" class="select-control" aria-label="Feature for distribution analysis"></select></div>
+      <div class="analysis-grid"><div class="chart-panel large"><div class="panel-title"><div><h3 id="distributionTitle">Feature distribution</h3><p>Histogram of the selected values</p></div><span class="chart-unit">DENSITY</span></div><div id="distributionChart" class="plot"></div></div><div class="stats-aside"><p class="eyebrow">SUMMARY VALUES</p><div id="distributionStats" class="stat-list"></div><div class="theory-note"><b>What the bars show</b><p>Taller bars mean more observations fall in that value range.</p></div><div class="theory-note"><b>Average and midpoint</b><p>The average uses every value; the midpoint marks the value in the middle.</p></div></div></div>
+    </section>
+    <section class="section wrap" id="categorical">
+      <div class="section-heading"><div><p class="eyebrow">CATEGORIES</p><h2>Compare groups</h2><p>See which values appear most often in a selected feature.</p></div><select id="categoryFeature" class="select-control" aria-label="Categorical feature for frequency analysis"></select></div>
+      <div class="chart-panel"><div class="panel-title"><div><h3 id="categoryTitle">Most frequent categories</h3><p>Top observed categories</p></div></div><div id="categoryChart" class="plot"></div></div>
+    </section>
+    <section class="section tinted" id="bivariate"><div class="wrap">
+      <div class="section-heading"><div><p class="eyebrow">FEATURE PAIR</p><h2>Compare two features</h2><p>Each point represents a home with values for both selected features.</p></div><div class="select-pair"><select id="scatterX" class="select-control" aria-label="Scatter plot horizontal feature"></select><span>vs</span><select id="scatterY" class="select-control" aria-label="Scatter plot vertical feature"></select></div></div>
+      <div class="chart-panel"><div class="panel-title"><div><h3 id="scatterTitle">Feature relationship</h3><p>Compare values side by side</p></div><div class="correlation-badge"><small>LINK</small><b id="scatterCorrelation">—</b></div></div><div id="scatterChart" class="plot tall"></div><p class="chart-caption">The score shows how closely the two values move together. It does not prove that one causes the other.</p></div>
+    </div></section>
+    <section class="section wrap" id="correlation">
+      <div class="section-heading"><div><p class="eyebrow">CORRELATIONS</p><h2>Feature relationship map</h2><p>Compare how numeric features move together and which ones track most closely with sale price.</p></div><span class="unit-note">CORRELATION · −1 TO +1</span></div>
+      <div class="analysis-grid"><div class="chart-panel large"><div class="panel-title"><div><h3>Column relationship map</h3><p>See which number-based values move together</p></div></div><div id="correlationChart" class="plot heatmap"></div></div><div class="ranked-panel"><h3>Columns most related to SalePrice</h3><div id="correlationRanking"></div><p class="fine-print">Columns that move together may not cause one another; another factor could affect both.</p></div></div>
+    </section>
+    <section class="section tinted" id="covariance"><div class="wrap">
+      <div class="section-heading"><div><p class="eyebrow">HOW VALUES MOVE</p><h2>Compare two features</h2><p>See whether larger values in one feature tend to accompany larger or smaller values in another.</p></div><div class="select-pair"><select id="covX" class="select-control" aria-label="First feature for covariance"></select><span>with</span><select id="covY" class="select-control" aria-label="Second feature for covariance"></select></div></div>
+      <div class="covariance-result"><div><p class="eyebrow">HOW CLOSELY THEY MOVE</p><strong id="covarianceValue">—</strong><span id="covarianceInterpretation">Select two numeric features.</span></div><div class="cov-definition"><b>How to read it</b><p>A positive result means larger values often appear together; a negative result means one tends to be larger when the other is smaller. The number also depends on the features' units.</p></div></div>
+      <div class="table-wrap covariance-wrap"><table id="covarianceTable"></table></div>
+    </div></section>
+    <section class="section wrap" id="quantiles">
+      <div class="section-heading"><div><p class="eyebrow">RANGE</p><h2>Typical values and extremes</h2><p>The box shows the middle half of values, along with the minimum and maximum.</p></div><select id="quantileFeature" class="select-control" aria-label="Feature for quantile analysis"></select></div>
+      <div class="quantile-grid"><div class="chart-panel"><div class="panel-title"><div><h3 id="quantileTitle">Typical range</h3><p>Where most values fall, from low to high</p></div></div><div id="quantileChart" class="plot"></div></div><div class="quantile-values" id="quantileValues"></div></div>
+    </section>
+    <section class="section tinted" id="polynomial"><div class="wrap">
+      <div class="section-heading"><div><p class="eyebrow">TREND LINE</p><h2>Fit a curve</h2><p>Adjust the curve shape and compare it with the observed values.</p></div><div class="select-pair"><select id="polyX" class="select-control" aria-label="Curve input feature"></select><select id="polyY" class="select-control" aria-label="Curve output feature"></select><label class="degree-select">Curve detail <select id="polyDegree" aria-label="Curve detail"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></label></div></div>
+      <div class="chart-panel"><div class="panel-title"><div><h3 id="polyTitle">Trend line</h3><p>Observed points and fitted curve</p></div><div class="correlation-badge"><small>FIT SCORE</small><b id="polyR2">—</b></div></div><div id="polynomialChart" class="plot tall"></div></div>
+      <p class="chart-caption">This curve summarizes the selected data. A close fit to these homes does not guarantee accurate estimates for other homes.</p>
+    </div></section>
+    <section class="section wrap" id="missing">
+      <div class="section-heading"><div><p class="eyebrow">DATA QUALITY</p><h2>Missing values</h2><p>See which columns have gaps and how many values are missing.</p></div></div>
+      <div class="analysis-grid"><div class="chart-panel large"><div class="panel-title"><div><h3>Missing observations</h3><p>Columns with no missing values are omitted from this chart</p></div></div><div id="missingChart" class="plot"></div></div><div class="table-wrap missing-table-wrap"><table id="missingTable"></table></div></div>
+    </section>
+    <section class="section findings-section" id="findings"><div class="wrap">
+      <div class="section-heading"><div><p class="eyebrow">AT A GLANCE</p><h2>What stands out</h2><p>These summaries update whenever you change the dataset.</p></div><span class="live-label"><span class="live-dot"></span> LIVE</span></div>
+      <div id="findingsGrid" class="findings-grid"></div>
+      <p class="caution">Findings describe this dataset only. Association is not evidence that a feature causes a change in sale price.</p>
+    </div></section>
+    <section class="conclusion wrap"><div><p class="eyebrow">EXPLORE</p><h2>Find the patterns in your data.</h2></div><p>Compare summaries, charts, and feature relationships to get a clearer picture of the homes in your dataset.</p></section>
+    <footer class="footer"><div class="wrap footer-inner"><span>Urban Real Estate Data Explorer</span><span>Housing data, made easier to explore</span><a href="https://www.kaggle.com/c/5407/data" target="_blank" rel="noreferrer">Dataset source ↗</a></div></footer>
+  </main>
+</body>
+</html>
