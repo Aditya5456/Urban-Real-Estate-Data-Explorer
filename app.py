@@ -1,4 +1,5 @@
 """Flask backend for the Urban Real Estate Data Explorer."""
+
 from __future__ import annotations
 
 import os
@@ -303,6 +304,7 @@ def unexpected(exc):
         return error(exc.description, exc.code or 500)
     app.logger.exception("Unhandled request error", exc_info=exc)
     return error("The analysis could not be completed. Check the selected feature values and try again.", 500)
+
 
 
 if __name__ == "__main__":
